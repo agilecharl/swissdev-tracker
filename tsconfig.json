@@ -8,6 +8,33 @@
     },
     {
       "path": "./apps/web"
+    },
+    {
+      "path": "./apps/api-e2e"
+    },
+    {
+      "path": "./apps/api"
+    },
+    {
+      "path": "./apps/telegram-bot-e2e"
+    },
+    {
+      "path": "./apps/telegram-bot"
+    },
+    {
+      "path": "./apps/agent-e2e"
+    },
+    {
+      "path": "./apps/agent"
+    },
+    {
+      "path": "./libs/types"
+    },
+    {
+      "path": "./libs/resume-parser"
+    },
+    {
+      "path": "./libs/matcher"
     }
   ]
 }

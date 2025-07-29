@@ -34,7 +34,8 @@
         "libs/*",
         "libs/types/*",
         "libs/resume-parser/*",
-        "libs/matcher/*"
+        "libs/matcher/*",
+        "libs/data/*"
       ]
     },
     {
@@ -103,7 +104,8 @@
         "libs/*",
         "libs/types/*",
         "libs/resume-parser/*",
-        "libs/matcher/*"
+        "libs/matcher/*",
+        "libs/data/*"
       ],
       "options": {
         "typecheck": {

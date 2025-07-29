@@ -35,6 +35,9 @@
     },
     {
       "path": "./libs/matcher"
+    },
+    {
+      "path": "./libs/data"
     }
   ]
 }

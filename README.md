@@ -1,82 +1,264 @@
-# SwissdevTracker
+# 🇨🇭 Swiss Dev Project
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+> A full-stack developer portfolio project that helps users track jobs and companies. Built using modern technologies and deployed on GitHub and a personal Synology server.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+---
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/react-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## 📘 Overview
 
-## Finish your CI setup
+The **Swiss Dev Project** is a modular full-stack system demonstrating real-world application architecture. It includes a job and company tracking system, a Telegram bot interface, an intelligent agent layer, and a web frontend — all orchestrated in an Nx monorepo.
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/6UDRbRDYgf)
+It showcases:
 
+- Multi-environment testing (e2e)
+- Microservice architecture
+- AI-powered job matching (Ollama)
+- Resume parsing
+- Bot automation
+- Containerized deployment
 
-## Run tasks
+---
 
-To run the dev server for your app, use:
+## 🗂️ Monorepo Structure
 
-```sh
-npx nx serve web
+```bash
+apps/
+├── agent/               # Agent orchestration logic using Ollama
+├── agent-e2e/           # E2E tests for agent
+├── api/                 # Express backend API for jobs/companies
+├── api-e2e/             # E2E tests for API
+├── telegram-bot/        # Telegram bot for user interactions
+├── telegram-bot-e2e/    # E2E tests for bot
+├── web/                 # React frontend
+└── web-e2e/             # E2E tests for web
+
+libs/
+├── data/                # Shared Mongo/Postgres data access logic
+├── matcher/             # AI job matching algorithms (Ollama)
+├── resume-parser/       # Resume/CV parsing utilities
+└── types/               # Shared types across frontend/backend
 ```
 
-To create a production bundle:
+---
 
-```sh
-npx nx build web
+## ⚙️ App Responsibilities
+
+### `apps/api`
+
+- **Type**: Express.js backend
+- **Purpose**: CRUD for jobs and companies
+- **Database**: PostgreSQL & MongoDB hybrid
+- **Endpoints**: REST + future GraphQL extension
+
+---
+
+### `apps/agent`
+
+- **Type**: AI Agent Orchestrator
+- **Purpose**: Uses Ollama to analyze resumes and suggest job matches
+- **Integration**: Calls matcher + resume-parser libraries
+
+---
+
+### `apps/telegram-bot`
+
+- **Type**: Telegram Bot (Node.js)
+- **Purpose**: Allow users to interact with the system through chat
+- **Features**: Search jobs, submit resumes, get alerts
+
+---
+
+### `apps/web`
+
+- **Type**: React (SPA)
+- **Purpose**: Frontend interface
+- **Features**: Job listings, company profiles, tracking dashboard
+- **Framework**: Tailwind CSS, React Router
+
+---
+
+## 📦 Shared Libraries
+
+### `libs/data`
+
+- Database access logic for PostgreSQL and MongoDB
+- Includes Prisma/TypeORM + Mongoose setup
+
+### `libs/matcher`
+
+- Job/candidate matching logic
+- AI-enhanced search with Ollama
+
+### `libs/resume-parser`
+
+- NLP tools for extracting data from CVs
+- Supports PDF and DOCX
+
+### `libs/types`
+
+- Global shared TypeScript interfaces
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repo
+
+```bash
+git clone https://github.com/agilecharl/swiss-dev-project.git
+cd swiss-dev-project
 ```
 
-To see all available targets to run for a project, run:
+### 2. Install Dependencies
 
-```sh
-npx nx show project web
+```bash
+npm install
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+### 3. Environment Setup
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Create a `.env` file in the root:
 
-## Add new projects
-
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/react:app demo
+```
+DATABASE_URL=postgres://...
+MONGO_URL=mongodb://...
+OLLAMA_MODEL=llama3
+TELEGRAM_TOKEN=your-bot-token
 ```
 
-To generate a new library, use:
+---
 
-```sh
-npx nx g @nx/react:lib mylib
+## 🧪 Local Development
+
+### Start Dev Servers
+
+```bash
+# API
+nx serve api
+
+# Web Frontend
+nx serve web
+
+# Telegram Bot
+nx serve telegram-bot
+
+# AI Agent
+nx serve agent
 ```
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+### Run Tests
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+# All tests
+nx run-many --target=test --all
 
+# E2E tests
+nx e2e api-e2e
+```
 
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-## Install Nx Console
+## ⚒️ Build & Deployment
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+### Build All Apps
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+```bash
+nx run-many --target=build --all
+```
 
-## Useful links
+### Docker Deployment
 
-Learn more:
+```bash
+docker-compose up --build
+```
 
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/react-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Deployed apps run on your **Synology server** and are publicly available via:
 
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- **GitHub:** [github.com/agilecharl](https://github.com/agilecharl)
+- **Web:** [agilecharl.com](https://agilecharl.com)
+
+---
+
+## 📡 API Reference
+
+> **Base URL**: `/api`
+
+### `GET /jobs`
+
+- Returns a list of all jobs
+
+### `POST /jobs`
+
+- Create a new job posting
+
+### `GET /companies`
+
+- Returns list of companies
+
+### `POST /resume`
+
+- Uploads a resume and returns parsed data
+
+_(More detailed OpenAPI spec coming soon)_
+
+---
+
+## 🏗 Architecture Diagram
+
+```
+                ┌────────────────────┐
+                │     Frontend       │
+                │    (React Web)     │
+                └────────▲───────────┘
+                         │
+                         ▼
+                ┌────────────────────┐
+                │       API          │
+                │ (Express Backend)  │
+                └────────┬───────────┘
+                         │
+     ┌───────────────────┴──────────────┐
+     │                                  │
+     ▼                                  ▼
+PostgreSQL (Jobs, Companies)     MongoDB (Tracking, Logs)
+
+         ▲                              ▲
+         │                              │
+         └──────┐           ┌───────────┘
+                ▼           ▼
+         ┌──────────────┬──────────────┐
+         │    Resume    │   Matcher    │
+         │   Parser     │   (Ollama)   │
+         └──────────────┴──────────────┘
+                       ▲
+                       │
+                ┌──────┴──────┐
+                │   Agent     │
+                │ (Orchestrator) │
+                └──────┬──────┘
+                       │
+              ┌────────▼────────┐
+              │ Telegram Bot UI │
+              └─────────────────┘
+```
+
+---
+
+## 📅 Changelog
+
+| Date       | Change                        |
+| ---------- | ----------------------------- |
+| 2025-07-29 | Initial Documentation Created |
+| TBD        | Add GraphQL support           |
+| TBD        | Integrate OAuth and user auth |
+
+---
+
+Let me know if you’d like:
+
+- A **Confluence or Notion version**
+- A **PDF export**
+- Auto-generated **API docs** via Swagger or Postman
+- A README version tailored for GitHub
+
+Would you like this as a live documentation site too (using something like Docusaurus or Storybook for components)?

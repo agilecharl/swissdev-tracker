@@ -251,14 +251,3 @@ PostgreSQL (Jobs, Companies)     MongoDB (Tracking, Logs)
 | 2025-07-29 | Initial Documentation Created |
 | TBD        | Add GraphQL support           |
 | TBD        | Integrate OAuth and user auth |
-
----
-
-Let me know if you’d like:
-
-- A **Confluence or Notion version**
-- A **PDF export**
-- Auto-generated **API docs** via Swagger or Postman
-- A README version tailored for GitHub
-
-Would you like this as a live documentation site too (using something like Docusaurus or Storybook for components)?

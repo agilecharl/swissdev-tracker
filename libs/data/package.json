@@ -13,5 +13,13 @@
     },
     "./package.json": "./package.json"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  }
 }

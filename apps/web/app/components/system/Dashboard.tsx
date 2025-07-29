@@ -4,14 +4,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard">
       {/* Dashboard Navbar */}
-      <DashboardNavBar
-        items={[
-          { label: 'Home', href: '/' },
-          { label: 'Jobs', href: '/jobs' },
-          { label: 'Tracking', href: '/tracking' },
-          { label: 'Companies', href: '/companies' },
-        ]}
-      />
+      <DashboardNavBar items={[]} />
 
       {/* Main Content */}
       <main className="main-content"></main>

@@ -6,15 +6,24 @@ interface DashBoardNavBarProps {
   onNavigate?: (href: string) => void;
 }
 
+const initialMenuItems = [
+  { label: 'Home', href: '/' },
+  { label: 'Jobs', href: '/jobs' },
+  { label: 'Tracking', href: '/tracking' },
+  { label: 'Companies', href: '/companies' },
+];
+
 const DashBoardNavBar: React.FC<DashBoardNavBarProps> = ({
   items,
   activeHref,
   onNavigate,
 }) => {
+  const menuItems = items.length > 0 ? items : initialMenuItems;
+
   return (
     <nav className="dashboard-navbar">
       <ul className="dashboard-navbar-list">
-        {items.map((item) => (
+        {menuItems.map((item) => (
           <li
             key={item.href}
             className={`dashboard-navbar-item${

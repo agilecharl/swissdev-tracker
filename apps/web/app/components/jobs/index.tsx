@@ -17,14 +17,7 @@ const Jobs: React.FC<JobsProps> = ({ jobs }) => {
   if (!jobs || jobs.length === 0) {
     return (
       <div>
-        <DashboardNavBar
-          items={[
-            { label: 'Home', href: '/' },
-            { label: 'Jobs', href: '/jobs' },
-            { label: 'Tracking', href: '/tracking' },
-            { label: 'Companies', href: '/companies' },
-          ]}
-        />
+        <DashboardNavBar items={[]} />
         No job listings available.
       </div>
     );
@@ -32,14 +25,7 @@ const Jobs: React.FC<JobsProps> = ({ jobs }) => {
 
   return (
     <div>
-      <DashboardNavBar
-        items={[
-          { label: 'Home', href: '/' },
-          { label: 'Jobs', href: '/jobs' },
-          { label: 'Tracking', href: '/tracking' },
-          { label: 'Companies', href: '/companies' },
-        ]}
-      />
+      <DashboardNavBar items={[]} />
       <main className="main-content">
         <section className="section">
           <h3>Job Listings</h3>

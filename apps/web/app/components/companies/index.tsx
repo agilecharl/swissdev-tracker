@@ -9,36 +9,22 @@ interface Company {
 }
 
 interface CompaniesProps {
-  countries: string[];
+  companies: Company[];
 }
 
-const Companies: React.FC<CompaniesProps> = ({ countries }) => {
-  if (!countries || countries.length === 0) {
+const Companies: React.FC<CompaniesProps> = ({ companies }) => {
+  if (!companies || companies.length === 0) {
     return (
       <div>
-        <DashboardNavBar
-          items={[
-            { label: 'Home', href: '/' },
-            { label: 'Jobs', href: '/jobs' },
-            { label: 'Tracking', href: '/tracking' },
-            { label: 'Companies', href: '/companies' },
-          ]}
-        />
-        No country listings available.
+        <DashboardNavBar items={[]} />
+        No company listings available.
       </div>
     );
   }
 
   return (
     <div>
-      <DashboardNavBar
-        items={[
-          { label: 'Home', href: '/' },
-          { label: 'Jobs', href: '/jobs' },
-          { label: 'Tracking', href: '/tracking' },
-          { label: 'Companies', href: '/companies' },
-        ]}
-      />
+      <DashboardNavBar items={[]} />
       <main className="main-content">
         <section className="section">
           <h1>Companies</h1>
@@ -49,13 +35,13 @@ const Companies: React.FC<CompaniesProps> = ({ countries }) => {
           </div>
         </section>
         <ul>
-          {countries.map((country) => (
-            <li key={country} style={{ marginBottom: '1.5rem' }}>
-              <h3>{country}</h3>
+          {companies.map((company) => (
+            <li key={company.id} style={{ marginBottom: '1.5rem' }}>
+              <h3>{company.name}</h3>
               <p>
-                <strong>Location:</strong> {country}
+                <strong>Location:</strong> {company.location}
               </p>
-              <p>Description of the company in {country}.</p>
+              <p>{company.description}</p>
             </li>
           ))}
         </ul>

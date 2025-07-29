@@ -1,5 +1,7 @@
+import Dashboard from './components/system/Dashboard';
+
 export function App() {
-  return;
+  return <Dashboard />;
 }
 
 export default App;

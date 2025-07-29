@@ -1,0 +1,58 @@
+.dashboard {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  background: #f8f9fa;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+}
+
+.sidebar h2 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar ul li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.sidebar ul li:hover {
+  background: #e9ecef;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  background: #f1f3f5;
+  display: flex;
+  gap: 20px;
+}
+
+.section {
+  flex: 1;
+}
+
+.section h3 {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card p {
+  margin: 5px 0;
+}

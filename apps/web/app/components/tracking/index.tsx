@@ -1,9 +1,9 @@
-import DashboardNavBar from './dashBoardNavBar';
+import React from 'react';
+import DashboardNavBar from '../system/dashBoardNavBar';
 
-const Dashboard = () => {
+const Tracking: React.FC = () => {
   return (
-    <div className="dashboard">
-      {/* Dashboard Navbar */}
+    <div>
       <DashboardNavBar
         items={[
           { label: 'Home', href: '/' },
@@ -12,11 +12,10 @@ const Dashboard = () => {
           { label: 'Companies', href: '/companies' },
         ]}
       />
-
-      {/* Main Content */}
-      <main className="main-content"></main>
+      <h1>Tracking</h1>
+      <p>Welcome to the tracking page.</p>
     </div>
   );
 };
 
-export default Dashboard;
+export default Tracking;

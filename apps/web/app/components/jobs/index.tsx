@@ -1,4 +1,5 @@
-import React from 'react';
+import { getRecords } from '@swissdev-tracker/data';
+import React, { useEffect } from 'react';
 import DashboardNavBar from '../system/dashBoardNavBar';
 
 interface Job {
@@ -14,6 +15,19 @@ interface JobsProps {
 }
 
 const Jobs: React.FC<JobsProps> = ({ jobs }) => {
+  useEffect(() => {
+    const getData = async () => {
+      await getRecords('jobs', {})
+        .then((data) => {
+          console.log('Fetched jobs:', data);
+        })
+        .catch((error) => {
+          console.error('Error fetching jobs:', error);
+        });
+    };
+    getData();
+  }, []);
+
   if (!jobs || jobs.length === 0) {
     return (
       <div>

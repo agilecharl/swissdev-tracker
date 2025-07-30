@@ -2,7 +2,17 @@
   "name": "@swissdev-tracker/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "postinstall": "electron-builder install-app-deps",
+    "nxe:build:frontend": "nx build @swissdev-tracker/web",
+    "nxe:build:backend": "nx build electron-web",
+    "nxe:serve:frontend": "nx serve @swissdev-tracker/web",
+    "nxe:serve:backend": "nx serve electron-web",
+    "nxe:test:frontend": "nx test @swissdev-tracker/web",
+    "nxe:test:backend": "nx test electron-web",
+    "nxe:package:app": "nx run electron-web:make --prepackageOnly",
+    "nxe:make:app": "nx run electron-web:make"
+  },
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -35,6 +45,7 @@
     "@nx/webpack": "21.3.7",
     "@nx/workspace": "21.3.7",
     "@nxrocks/nx-flutter": "^10.0.1",
+    "@nxrocks/nx-spring-boot": "^11.0.1",
     "@playwright/test": "^1.36.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@react-router/dev": "^7.2.0",

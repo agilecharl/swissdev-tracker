@@ -38,6 +38,9 @@
     },
     {
       "path": "./libs/data"
+    },
+    {
+      "path": "./apps/electron-web"
     }
   ]
 }

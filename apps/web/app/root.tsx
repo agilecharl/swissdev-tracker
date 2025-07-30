@@ -8,6 +8,7 @@ import {
   type MetaFunction,
 } from 'react-router';
 
+import stylesUrl from '../styles.css?url';
 import { AppNav } from './components/system/app-nav';
 
 export const meta: MetaFunction = () => [
@@ -17,6 +18,7 @@ export const meta: MetaFunction = () => [
 ];
 
 export const links: LinksFunction = () => [
+  { rel: 'stylesheet', href: stylesUrl },
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
   {
     rel: 'preconnect',

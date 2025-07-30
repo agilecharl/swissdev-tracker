@@ -7,7 +7,7 @@ services:
     environment:
       POSTGRES_DB: swissdev
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./sql:/docker-entrypoint-initdb.d
@@ -23,7 +23,7 @@ services:
     image: mongo:7
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
-      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
       MONGO_INITDB_DATABASE: swissdev
     volumes:
       - mongo_data:/data/db
@@ -55,8 +55,9 @@ services:
       target: api
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/swissdev
-      - MONGO_URL=mongodb://mongo:mongo@mongodb:27017/swissdev
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/swissdev
+      - MONGO_URL=mongodb://mongo:${MONGO_PASSWORD}@mongodb:27017/swissdev
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
       - REDIS_URL=redis://redis:6379
       - PORT=3000
     ports:
@@ -146,8 +147,8 @@ services:
       target: production
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/swissdev
-      - MONGO_URL=mongodb://mongo:mongo@mongodb:27017/swissdev
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/swissdev
+      - MONGO_URL=mongodb://mongo:${MONGO_PASSWORD}@mongodb:27017/swissdev
       - REDIS_URL=redis://redis:6379
       - OLLAMA_HOST=ollama:11434
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}

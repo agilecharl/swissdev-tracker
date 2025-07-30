@@ -1,9 +1,8 @@
 # Multi-stage Dockerfile for Swiss Dev Project
-FROM node:20-alpine AS base
+FROM node:20.11.1-alpine AS base
 
 # Install dependencies needed for building
-RUN apk add --no-cache libc6-compat
-RUN apk update
+RUN apk update && apk add --no-cache libc6-compat
 
 # Set working directory
 WORKDIR /app
@@ -35,8 +34,9 @@ COPY . .
 RUN npx nx run-many --target=build --all --prod
 
 # Production API stage
-FROM node:20-alpine AS api
+FROM node:20-alpine3.19 AS api
 WORKDIR /app
+RUN apk update && apk upgrade
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
@@ -51,7 +51,7 @@ ENV NODE_ENV=production
 CMD ["node", "main.js"]
 
 # Production Web stage  
-FROM node:20-alpine AS web
+FROM node:20-alpine3.19 AS web
 WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -67,7 +67,7 @@ ENV NODE_ENV=production
 CMD ["npx", "serve", "-s", ".", "-l", "4200"]
 
 # Production Agent stage
-FROM node:20-alpine AS agent
+FROM node:20-alpine3.19 AS agent
 WORKDIR /app
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs

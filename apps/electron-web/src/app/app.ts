@@ -7,9 +7,9 @@ import { rendererAppName, rendererAppPort } from './constants';
 export default class App {
   // Keep a global reference of the window object, if you don't, the window will
   // be closed automatically when the JavaScript object is garbage collected.
-  static mainWindow: Electron.BrowserWindow | null;
-  static application: Electron.App;
-  static BrowserWindow: typeof BrowserWindow;
+  public static mainWindow: Electron.BrowserWindow | null = null;
+  public static application: Electron.App;
+  public static BrowserWindow: typeof BrowserWindow;
 
   public static isDevelopmentMode() {
     const isEnvironmentSet: boolean = 'ELECTRON_IS_DEV' in process.env;

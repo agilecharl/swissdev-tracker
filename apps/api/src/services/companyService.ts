@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 import DatabaseService from '../lib/database';
 
 export interface CreateCompanyData {
@@ -43,7 +43,7 @@ export class CompanyService {
       offset = 0,
     } = options;
 
-    const where: Prisma.CompanyWhereInput = {};
+    const where: any = {};
 
     if (industry) {
       where.industry = {

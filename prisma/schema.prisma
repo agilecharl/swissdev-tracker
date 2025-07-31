@@ -11,6 +11,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["swissdev"]
 }
 
 model Company {
@@ -33,13 +34,14 @@ model Company {
   jobs Job[]
 
   @@map("companies")
+  @@schema("swissdev")
 }
 
 model Job {
   id          Int        @id @default(autoincrement())
   title       String
-  company     String
-  companyId   Int?       // Optional foreign key to Company
+  company     String     // This will be the company name
+  companyId   Int?       // Foreign key to Company table
   location    String
   type        JobType
   salary      String?
@@ -54,6 +56,7 @@ model Job {
   companyRef  Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
 
   @@map("jobs")
+  @@schema("swissdev")
 }
 
 enum JobType {
@@ -61,10 +64,14 @@ enum JobType {
   PART_TIME
   CONTRACT
   INTERNSHIP
+
+  @@schema("swissdev")
 }
 
 enum JobStatus {
   ACTIVE
   INACTIVE
   FILLED
+
+  @@schema("swissdev")
 }

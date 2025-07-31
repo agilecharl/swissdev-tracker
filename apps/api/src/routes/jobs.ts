@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { JobService, JobStatus, JobType } from '../services/jobService2';
+import { JobService, JobStatus, JobType } from '../services/jobService';
 
 const router = Router();
 const jobService = new JobService();

@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 /**
  * Get project statuses
  */
-function swissdev_tracker_get_project_statuses() {
+function swissdevTrackerGetProjectStatuses() {
     return array(
         'active' => __('Active', 'swissdev-tracker-wordpress'),
         'completed' => __('Completed', 'swissdev-tracker-wordpress'),
@@ -151,7 +151,7 @@ function swissdev_tracker_user_can_manage() {
 /**
  * Check if user can edit specific project
  */
-function swissdev_tracker_user_can_edit_project($project_id) {
+function swissdevTrackerUserCanEditProject($project_id) {
     if (current_user_can('manage_options')) {
         return true;
     }
@@ -159,11 +159,12 @@ function swissdev_tracker_user_can_edit_project($project_id) {
     // Add custom logic here for project-specific permissions
     return false;
 }
+```
 
 /**
  * Check if user can edit specific task
  */
-function swissdev_tracker_user_can_edit_task($task_id) {
+function swissdevTrackerUserCanEditTask($task_id) {
     if (current_user_can('manage_options')) {
         return true;
     }
@@ -182,7 +183,7 @@ function swissdev_tracker_user_can_edit_task($task_id) {
 /**
  * Sanitize project data
  */
-function swissdev_tracker_sanitize_project_data($data) {
+function swissdevTrackerSanitizeProjectData($data) {
     $sanitized = array();
     
     if (isset($data['name'])) {
@@ -194,7 +195,7 @@ function swissdev_tracker_sanitize_project_data($data) {
     }
     
     if (isset($data['status'])) {
-        $valid_statuses = array_keys(swissdev_tracker_get_project_statuses());
+        $valid_statuses = array_keys(swissdevTrackerGetProjectStatuses());
         $sanitized['status'] = in_array($data['status'], $valid_statuses) ? $data['status'] : 'active';
     }
     
@@ -204,7 +205,7 @@ function swissdev_tracker_sanitize_project_data($data) {
 /**
  * Sanitize task data
  */
-function swissdev_tracker_sanitize_task_data($data) {
+function swissdevTrackerSanitizeTaskData($data) {
     $sanitized = array();
     
     if (isset($data['title'])) {
@@ -243,7 +244,7 @@ function swissdev_tracker_sanitize_task_data($data) {
 /**
  * Log activity
  */
-function swissdev_tracker_log_activity($type, $object_id, $message) {
+function swissdevTrackerLogActivity($type, $object_id, $message) {
     global $wpdb;
     
     $table_name = $wpdb->prefix . 'swissdev_activity_log';

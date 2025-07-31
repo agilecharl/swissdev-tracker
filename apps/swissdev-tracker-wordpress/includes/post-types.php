@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 /**
  * Register custom post types
  */
-function swissdev_tracker_register_post_types() {
+function swissdevTrackerRegisterPostTypes() {
     // Register Projects post type
     register_post_type('swissdev_project', array(
         'labels' => array(
@@ -87,13 +87,13 @@ function swissdev_tracker_register_post_types() {
     ));
     
     // Register taxonomies
-    swissdev_tracker_register_taxonomies();
+    swissdevTrackerRegisterTaxonomies();
 }
 
 /**
  * Register custom taxonomies
  */
-function swissdev_tracker_register_taxonomies() {
+function swissdevTrackerRegisterTaxonomies() {
     // Project Status taxonomy
     register_taxonomy('project_status', 'swissdev_project', array(
         'labels' => array(

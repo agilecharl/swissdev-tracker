@@ -11,17 +11,22 @@ if (!defined('ABSPATH')) {
 }
 
 /**
+ * REST API namespace for SwissDev Tracker
+ */
+define('SWISSDEV_TRACKER_REST_NAMESPACE', 'swissdev-tracker/v1');
+
+/**
  * Register REST API routes
  */
-function swissdev_tracker_register_rest_routes() {
+function swissdevTrackerRegisterRestRoutes() {
     // Projects endpoints
-    register_rest_route('swissdev-tracker/v1', '/projects', array(
+    register_rest_route(SWISSDEV_TRACKER_REST_NAMESPACE, '/projects', array(
         'methods' => 'GET',
-        'callback' => 'swissdev_tracker_get_projects',
-        'permission_callback' => 'swissdev_tracker_permissions_check',
+        'callback' => 'swissdevTrackerGetProjects',
+        'permission_callback' => 'swissdevTrackerPermissionsCheck',
     ));
     
-    register_rest_route('swissdev-tracker/v1', '/projects', array(
+    register_rest_route(SWISSDEV_TRACKER_REST_NAMESPACE, '/projects', array(
         'methods' => 'POST',
         'callback' => 'swissdev_tracker_create_project',
         'permission_callback' => 'swissdev_tracker_permissions_check',
@@ -44,57 +49,57 @@ function swissdev_tracker_register_rest_routes() {
         ),
     ));
     
-    register_rest_route('swissdev-tracker/v1', '/projects/(?P<id>\d+)', array(
+    register_rest_route(SWISSDEV_TRACKER_REST_NAMESPACE, '/projects/(?P<id>\d+)', array(
         'methods' => 'GET',
         'callback' => 'swissdev_tracker_get_project',
         'permission_callback' => 'swissdev_tracker_permissions_check',
     ));
     
-    register_rest_route('swissdev-tracker/v1', '/projects/(?P<id>\d+)', array(
+    register_rest_route(SWISSDEV_TRACKER_REST_NAMESPACE, '/projects/(?P<id>\d+)', array(
         'methods' => 'PUT',
         'callback' => 'swissdev_tracker_update_project',
         'permission_callback' => 'swissdev_tracker_permissions_check',
     ));
     
-    register_rest_route('swissdev-tracker/v1', '/projects/(?P<id>\d+)', array(
+    register_rest_route(SWISSDEV_TRACKER_REST_NAMESPACE, '/projects/(?P<id>\d+)', array(
         'methods' => 'DELETE',
         'callback' => 'swissdev_tracker_delete_project',
         'permission_callback' => 'swissdev_tracker_permissions_check',
     ));
     
     // Tasks endpoints
-    register_rest_route('swissdev-tracker/v1', '/tasks', array(
+    register_rest_route(SWISSDEV_TRACKER_REST_NAMESPACE, '/tasks', array(
         'methods' => 'GET',
         'callback' => 'swissdev_tracker_get_tasks',
         'permission_callback' => 'swissdev_tracker_permissions_check',
     ));
     
-    register_rest_route('swissdev-tracker/v1', '/tasks', array(
+    register_rest_route(SWISSDEV_TRACKER_REST_NAMESPACE, '/tasks', array(
         'methods' => 'POST',
         'callback' => 'swissdev_tracker_create_task',
         'permission_callback' => 'swissdev_tracker_permissions_check',
     ));
     
-    register_rest_route('swissdev-tracker/v1', '/tasks/(?P<id>\d+)', array(
+    register_rest_route(SWISSDEV_TRACKER_REST_NAMESPACE, '/tasks/(?P<id>\d+)', array(
         'methods' => 'GET',
         'callback' => 'swissdev_tracker_get_task',
         'permission_callback' => 'swissdev_tracker_permissions_check',
     ));
     
-    register_rest_route('swissdev-tracker/v1', '/tasks/(?P<id>\d+)', array(
+    register_rest_route(SWISSDEV_TRACKER_REST_NAMESPACE, '/tasks/(?P<id>\d+)', array(
         'methods' => 'PUT',
         'callback' => 'swissdev_tracker_update_task',
         'permission_callback' => 'swissdev_tracker_permissions_check',
     ));
     
-    register_rest_route('swissdev-tracker/v1', '/tasks/(?P<id>\d+)', array(
+    register_rest_route(SWISSDEV_TRACKER_REST_NAMESPACE, '/tasks/(?P<id>\d+)', array(
         'methods' => 'DELETE',
         'callback' => 'swissdev_tracker_delete_task',
         'permission_callback' => 'swissdev_tracker_permissions_check',
     ));
     
     // Dashboard stats endpoint
-    register_rest_route('swissdev-tracker/v1', '/dashboard/stats', array(
+    register_rest_route(SWISSDEV_TRACKER_REST_NAMESPACE, '/dashboard/stats', array(
         'methods' => 'GET',
         'callback' => 'swissdev_tracker_get_dashboard_stats',
         'permission_callback' => 'swissdev_tracker_permissions_check',
@@ -104,14 +109,14 @@ function swissdev_tracker_register_rest_routes() {
 /**
  * Permission callback for REST API endpoints
  */
-function swissdev_tracker_permissions_check() {
+function swissdevTrackerPermissionsCheck() {
     return current_user_can('manage_options');
 }
 
 /**
  * Get all projects
  */
-function swissdev_tracker_get_projects($request) {
+function swissdevTrackerGetProjects($request) {
     global $wpdb;
     
     $table_name = $wpdb->prefix . 'swissdev_projects';

@@ -1,0 +1,179 @@
+# Multi-stage Dockerfile optimized for Swiss Dev Project
+FROM node:20.11.1-alpine AS base
+
+# Install dependencies needed for building
+RUN apk update && apk add --no-cache libc6-compat curl
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY nx.json ./
+COPY tsconfig*.json ./
+
+# Copy workspace configuration
+COPY .npmrc .npmrc* ./
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Development stage
+FROM base AS dev
+RUN npm ci
+COPY . .
+EXPOSE 4200 3000 8080
+CMD ["npm", "run", "dev"]
+
+# Build stage
+FROM base AS builder
+RUN npm ci
+COPY . .
+
+# Build all applications
+RUN npx nx run-many --target=build --all --prod
+
+# Production API stage
+FROM node:20-alpine3.19 AS api
+WORKDIR /app
+RUN apk update && apk upgrade && apk add --no-cache curl
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy built API
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/api ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
+
+USER nextjs
+EXPOSE 3000
+ENV NODE_ENV=production
+CMD ["node", "main.js"]
+
+# Production Web stage
+FROM node:20-alpine3.19 AS web
+WORKDIR /app
+RUN apk update && apk upgrade && apk add --no-cache curl nginx
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy built web app
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/web ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+
+# Configure nginx for SPA
+RUN echo 'server { \
+    listen 4200; \
+    server_name localhost; \
+    root /app; \
+    index index.html; \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+    location /api { \
+        proxy_pass http://api:3000; \
+        proxy_set_header Host $host; \
+        proxy_set_header X-Real-IP $remote_addr; \
+    } \
+}' > /etc/nginx/http.d/default.conf
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:4200 || exit 1
+
+USER nextjs
+EXPOSE 4200
+ENV NODE_ENV=production
+CMD ["nginx", "-g", "daemon off;"]
+
+# Production Agent stage
+FROM node:20-alpine3.19 AS agent
+WORKDIR /app
+RUN apk update && apk upgrade && apk add --no-cache curl
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy built agent
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/agent ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+
+# Add health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
+
+USER nextjs
+EXPOSE 8080
+ENV NODE_ENV=production
+CMD ["node", "main.js"]
+
+# Production Telegram Bot stage
+FROM node:20-alpine3.19 AS telegram-bot
+WORKDIR /app
+RUN apk update && apk upgrade
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copy built telegram bot
+COPY --from=builder --chown=nextjs:nodejs /app/dist/apps/telegram-bot ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+
+USER nextjs
+ENV NODE_ENV=production
+CMD ["node", "main.js"]
+
+# Production all-in-one stage
+FROM nginx:alpine AS production
+WORKDIR /app
+
+# Install Node.js
+RUN apk add --no-cache curl nodejs npm
+
+# Copy all built applications
+COPY --from=builder /app/dist/ ./dist/
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Create startup script
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'set -e' >> /app/start.sh && \
+    echo '' >> /app/start.sh && \
+    echo '# Start API in background' >> /app/start.sh && \
+    echo 'cd /app && node dist/apps/api/main.js &' >> /app/start.sh && \
+    echo 'API_PID=$!' >> /app/start.sh && \
+    echo '' >> /app/start.sh && \
+    echo '# Start Agent in background' >> /app/start.sh && \
+    echo 'cd /app && node dist/apps/agent/main.js &' >> /app/start.sh && \
+    echo 'AGENT_PID=$!' >> /app/start.sh && \
+    echo '' >> /app/start.sh && \
+    echo '# Start Telegram Bot in background' >> /app/start.sh && \
+    echo 'cd /app && node dist/apps/telegram-bot/main.js &' >> /app/start.sh && \
+    echo 'BOT_PID=$!' >> /app/start.sh && \
+    echo '' >> /app/start.sh && \
+    echo '# Start nginx in foreground' >> /app/start.sh && \
+    echo 'nginx -g "daemon off;" &' >> /app/start.sh && \
+    echo 'NGINX_PID=$!' >> /app/start.sh && \
+    echo '' >> /app/start.sh && \
+    echo '# Wait for any process to exit' >> /app/start.sh && \
+    echo 'wait' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
+# Add health check for all-in-one
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost/health && \
+      curl -f http://localhost:3000/health && \
+      curl -f http://localhost:8080/health || exit 1
+
+EXPOSE 80 3000 8080
+ENV NODE_ENV=production
+
+CMD ["/app/start.sh"]

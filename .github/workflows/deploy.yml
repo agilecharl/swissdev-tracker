@@ -1,0 +1,235 @@
+name: Deploy to Synology
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Build applications
+        run: npx nx run-many --target=build --all --prod
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata for Docker images
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,prefix={{branch}}-
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.new
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:api
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:web
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:agent
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:telegram-bot
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:production
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          target: api
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Web image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.new
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:web
+          target: web
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+
+      - name: Build and push Agent image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.new
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:agent
+          target: agent
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+
+      - name: Build and push Telegram Bot image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.new
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:telegram-bot
+          target: telegram-bot
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+
+      - name: Build and push Production image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.new
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:production
+          target: production
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+
+      - name: Create deployment package
+        run: |
+          mkdir -p deployment
+          cp docker-compose.yml deployment/
+          cp nginx.conf deployment/
+          cp .env.example deployment/.env
+
+          # Create deployment script
+          cat > deployment/deploy.sh << 'EOF'
+          #!/bin/bash
+          set -e
+
+          echo "Starting Swiss Dev deployment..."
+
+          # Pull latest images
+          docker-compose pull
+
+          # Stop existing containers
+          docker-compose down
+
+          # Start new containers
+          docker-compose up -d
+
+          # Clean up old images
+          docker image prune -f
+
+          echo "Deployment completed successfully!"
+          EOF
+
+          chmod +x deployment/deploy.sh
+
+      - name: Deploy to Synology via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SYNOLOGY_HOST }}
+          username: ${{ secrets.SYNOLOGY_USER }}
+          key: ${{ secrets.SYNOLOGY_SSH_KEY }}
+          port: ${{ secrets.SYNOLOGY_PORT || 22 }}
+          script: |
+            # Create deployment directory
+            mkdir -p /volume1/docker/swissdev-tracker
+            cd /volume1/docker/swissdev-tracker
+
+            # Login to GitHub Container Registry
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Download deployment files
+            curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                 -H "Accept: application/vnd.github.v3.raw" \
+                 -o docker-compose.yml \
+                 https://api.github.com/repos/${{ github.repository }}/contents/docker-compose.synology.yml
+
+            curl -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                 -H "Accept: application/vnd.github.v3.raw" \
+                 -o nginx.conf \
+                 https://api.github.com/repos/${{ github.repository }}/contents/nginx.conf
+
+            # Update image references to use specific tags
+            sed -i 's|ghcr.io/agilecharl/tools:|ghcr.io/${{ github.repository }}:|g' docker-compose.yml
+
+            # Set environment variables
+            export POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            export MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
+            export TELEGRAM_TOKEN=${{ secrets.TELEGRAM_TOKEN }}
+
+            # Pull and deploy
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
+
+            # Clean up
+            docker image prune -f
+
+            echo "Swiss Dev deployment completed!"
+
+      - name: Health Check
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SYNOLOGY_HOST }}
+          username: ${{ secrets.SYNOLOGY_USER }}
+          key: ${{ secrets.SYNOLOGY_SSH_KEY }}
+          port: ${{ secrets.SYNOLOGY_PORT || 22 }}
+          script: |
+            cd /volume1/docker/swissdev-tracker
+
+            # Wait for services to start
+            sleep 30
+
+            # Check service health
+            if docker-compose ps | grep -q "Up"; then
+              echo "✅ Services are running"
+              docker-compose ps
+            else
+              echo "❌ Some services failed to start"
+              docker-compose logs --tail=50
+              exit 1
+            fi
+
+      - name: Notify deployment status
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: |
+            Swiss Dev deployment to Synology: ${{ job.status }}
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

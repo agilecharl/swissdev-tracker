@@ -1,7 +1,7 @@
 <?php
 /**
  * SwissDev Tracker Admin Menu Functions
- * 
+ *
  * @package SwissDevTrackerWordPress
  */
 
@@ -13,14 +13,14 @@ if (!defined('ABSPATH')) {
 /**
  * Add admin menu pages
  */
-function swissdev_tracker_add_admin_menu() {
+function swissdevTrackerAddAdminMenu() {
     // Main menu page
     add_menu_page(
         __('SwissDev Tracker', 'swissdev-tracker-wordpress'),
         __('SwissDev Tracker', 'swissdev-tracker-wordpress'),
         'manage_options',
         'swissdev-tracker',
-        'swissdev_tracker_main_page',
+        'swissdevTrackerMainPage',
         'dashicons-analytics',
         30
     );
@@ -32,7 +32,7 @@ function swissdev_tracker_add_admin_menu() {
         __('Dashboard', 'swissdev-tracker-wordpress'),
         'manage_options',
         'swissdev-tracker',
-        'swissdev_tracker_main_page'
+        'swissdevTrackerMainPage'
     );
     
     // Projects submenu
@@ -42,7 +42,7 @@ function swissdev_tracker_add_admin_menu() {
         __('Projects', 'swissdev-tracker-wordpress'),
         'manage_options',
         'swissdev-tracker-projects',
-        'swissdev_tracker_projects_page'
+        'swissdevTrackerProjectsPage'
     );
     
     // Tasks submenu
@@ -52,7 +52,7 @@ function swissdev_tracker_add_admin_menu() {
         __('Tasks', 'swissdev-tracker-wordpress'),
         'manage_options',
         'swissdev-tracker-tasks',
-        'swissdev_tracker_tasks_page'
+        'swissdevTrackerTasksPage'
     );
     
     // Settings submenu
@@ -62,14 +62,14 @@ function swissdev_tracker_add_admin_menu() {
         __('Settings', 'swissdev-tracker-wordpress'),
         'manage_options',
         'swissdev-tracker-settings',
-        'swissdev_tracker_settings_page'
+        'swissdevTrackerSettingsPage'
     );
 }
 
 /**
  * Main dashboard page callback
  */
-function swissdev_tracker_main_page() {
+function swissdevTrackerMainPage() {
     ?>
     <div class="wrap">
         <h1><?php _e('SwissDev Tracker Dashboard', 'swissdev-tracker-wordpress'); ?></h1>
@@ -81,7 +81,7 @@ function swissdev_tracker_main_page() {
 /**
  * Projects page callback
  */
-function swissdev_tracker_projects_page() {
+function swissdevTrackerProjectsPage() {
     ?>
     <div class="wrap">
         <h1><?php _e('Projects', 'swissdev-tracker-wordpress'); ?></h1>
@@ -93,7 +93,7 @@ function swissdev_tracker_projects_page() {
 /**
  * Tasks page callback
  */
-function swissdev_tracker_tasks_page() {
+function swissdevTrackerTasksPage() {
     ?>
     <div class="wrap">
         <h1><?php _e('Tasks', 'swissdev-tracker-wordpress'); ?></h1>
@@ -105,7 +105,7 @@ function swissdev_tracker_tasks_page() {
 /**
  * Settings page callback
  */
-function swissdev_tracker_settings_page() {
+function swissdevTrackerSettingsPage() {
     ?>
     <div class="wrap">
         <h1><?php _e('Settings', 'swissdev-tracker-wordpress'); ?></h1>

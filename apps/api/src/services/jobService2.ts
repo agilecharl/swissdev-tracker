@@ -1,0 +1,260 @@
+import { PrismaClient } from '@prisma/client';
+import DatabaseService from '../lib/database';
+
+// Define JobType enum locally if not exported by @prisma/client
+export enum JobType {
+  FULL_TIME = 'FULL_TIME',
+  PART_TIME = 'PART_TIME',
+  CONTRACT = 'CONTRACT',
+  TEMPORARY = 'TEMPORARY',
+  INTERN = 'INTERN',
+  OTHER = 'OTHER',
+}
+
+// Define JobStatus enum locally if not exported by @prisma/client
+export enum JobStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
+  CLOSED = 'CLOSED',
+}
+
+export interface CreateJobData {
+  title: string;
+  company: string;
+  companyId?: number;
+  location: string;
+  type: JobType;
+  salary?: string;
+  description?: string;
+  requirements?: string[];
+}
+
+export interface UpdateJobData extends Partial<CreateJobData> {
+  status?: JobStatus;
+}
+
+export interface JobQueryOptions {
+  company?: string;
+  location?: string;
+  type?: JobType;
+  status?: JobStatus;
+  companyId?: number;
+  limit?: number;
+  offset?: number;
+}
+
+export class JobService {
+  private readonly prisma: PrismaClient;
+
+  constructor() {
+    this.prisma = DatabaseService.getInstance();
+  }
+
+  async getAllJobs(options: JobQueryOptions = {}) {
+    const {
+      company,
+      location,
+      type,
+      status,
+      companyId,
+      limit = 50,
+      offset = 0,
+    } = options;
+
+    const where: any = {};
+
+    if (company) {
+      where.company = {
+        contains: company,
+        mode: 'insensitive',
+      };
+    }
+
+    if (location) {
+      where.location = {
+        contains: location,
+        mode: 'insensitive',
+      };
+    }
+
+    if (type) {
+      where.type = type;
+    }
+
+    if (status) {
+      where.status = status;
+    }
+
+    if (companyId) {
+      where.companyId = companyId;
+    }
+
+    const [jobs, total] = await Promise.all([
+      this.prisma.job.findMany({
+        where,
+        include: {
+          companyRef: {
+            select: {
+              id: true,
+              name: true,
+              logo: true,
+            },
+          },
+        },
+        orderBy: {
+          postedDate: 'desc',
+        },
+        take: limit,
+        skip: offset,
+      }),
+      this.prisma.job.count({ where }),
+    ]);
+
+    return { jobs, total };
+  }
+
+  async getJobById(id: number) {
+    return this.prisma.job.findUnique({
+      where: { id },
+      include: {
+        companyRef: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            website: true,
+            logo: true,
+            location: true,
+            industry: true,
+            size: true,
+            benefits: true,
+            rating: true,
+          },
+        },
+      },
+    });
+  }
+
+  async createJob(data: CreateJobData) {
+    // If companyId is provided, verify the company exists
+    if (data.companyId) {
+      const company = await this.prisma.company.findUnique({
+        where: { id: data.companyId },
+      });
+      if (!company) {
+        throw new Error('Company not found');
+      }
+    }
+
+    const job = await this.prisma.job.create({
+      data: {
+        ...data,
+        requirements: data.requirements || [],
+      },
+      include: {
+        companyRef: {
+          select: {
+            id: true,
+            name: true,
+            logo: true,
+          },
+        },
+      },
+    });
+
+    // Update company's open positions count if companyId is provided
+    if (data.companyId) {
+      await this.updateCompanyOpenPositions(data.companyId);
+    }
+
+    return job;
+  }
+
+  async updateJob(id: number, data: UpdateJobData) {
+    const existingJob = await this.prisma.job.findUnique({
+      where: { id },
+    });
+
+    if (!existingJob) {
+      throw new Error('Job not found');
+    }
+
+    // If companyId is being updated, verify the new company exists
+    if (data.companyId && data.companyId !== existingJob.companyId) {
+      const company = await this.prisma.company.findUnique({
+        where: { id: data.companyId },
+      });
+      if (!company) {
+        throw new Error('Company not found');
+      }
+    }
+
+    const updatedJob = await this.prisma.job.update({
+      where: { id },
+      data,
+      include: {
+        companyRef: {
+          select: {
+            id: true,
+            name: true,
+            logo: true,
+          },
+        },
+      },
+    });
+
+    // Update open positions count for both old and new companies if companyId changed
+    if (data.companyId !== undefined) {
+      if (existingJob.companyId) {
+        await this.updateCompanyOpenPositions(existingJob.companyId);
+      }
+      if (data.companyId) {
+        await this.updateCompanyOpenPositions(data.companyId);
+      }
+    }
+
+    return updatedJob;
+  }
+
+  async deleteJob(id: number) {
+    const existingJob = await this.prisma.job.findUnique({
+      where: { id },
+    });
+
+    if (!existingJob) {
+      throw new Error('Job not found');
+    }
+
+    await this.prisma.job.delete({
+      where: { id },
+    });
+
+    // Update company's open positions count if job was associated with a company
+    if (existingJob.companyId) {
+      await this.updateCompanyOpenPositions(existingJob.companyId);
+    }
+
+    return true;
+  }
+
+  private async updateCompanyOpenPositions(companyId: number) {
+    const activeJobsCount = await this.prisma.job.count({
+      where: {
+        companyId,
+        status: JobStatus.ACTIVE,
+      },
+    });
+
+    await this.prisma.company.update({
+      where: { id: companyId },
+      data: { openPositions: activeJobsCount },
+    });
+  }
+
+  async getJobsByCompany(
+    companyId: number,
+    options: Omit<JobQueryOptions, 'companyId'> = {}
+  ) {
+    return this.getAllJobs({ ...options, companyId });
+  }
+}

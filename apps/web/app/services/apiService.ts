@@ -26,7 +26,7 @@ apiClient.interceptors.request.use(
     return config;
   },
   (error) => {
-    return Promise.reject(error);
+    return Promise.reject(error instanceof Error ? error : new Error(error));
   }
 );
 
@@ -41,7 +41,7 @@ apiClient.interceptors.response.use(
       localStorage.removeItem('authToken');
       // Redirect to login if needed
     }
-    return Promise.reject(error);
+    return Promise.reject(error instanceof Error ? error : new Error(error));
   }
 );
 

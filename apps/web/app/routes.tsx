@@ -8,4 +8,6 @@ export default [
   route('settings', './components/system/settings.tsx'),
   route('about', './routes/about.tsx'),
   route('logout', './components/system/logout.tsx'),
+  // Catch-all route for Chrome DevTools and other unmatched routes
+  route('*', './routes/catch-all.tsx'),
 ] satisfies RouteConfig;

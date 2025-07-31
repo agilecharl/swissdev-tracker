@@ -13,7 +13,23 @@ export default defineConfig(() => ({
     port: 4300,
     host: 'localhost',
   },
-  plugins: [!process.env.VITEST && reactRouter()],
+  plugins: [
+    !process.env.VITEST && reactRouter(),
+    // Custom plugin to handle Chrome DevTools requests
+    {
+      name: 'handle-devtools',
+      configureServer(server) {
+        server.middlewares.use(
+          '/.well-known/appspecific/com.chrome.devtools.json',
+          (req, res) => {
+            res.setHeader('Content-Type', 'application/json');
+            res.statusCode = 200;
+            res.end(JSON.stringify({ devtools: false }));
+          }
+        );
+      },
+    },
+  ],
   css: {
     postcss: './postcss.config.js',
   },

@@ -4,6 +4,23 @@ import { JobService, JobStatus, JobType } from '../services/jobService';
 const router = Router();
 const jobService = new JobService();
 
+// GET /api/jobs/count - Get total number of jobs
+router.get('/count', async (req, res) => {
+  try {
+    const totalJobs = await jobService.getTotalJobsCount();
+    return res.json({
+      success: true,
+      total: totalJobs,
+    });
+  } catch (error) {
+    console.error('Error fetching total jobs count:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch total jobs count',
+    });
+  }
+});
+
 // GET /api/jobs - Get all jobs
 router.get('/', async (req, res) => {
   try {

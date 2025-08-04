@@ -112,6 +112,11 @@ export class JobService {
     return { jobs, total };
   }
 
+  async getTotalJobsCount() {
+    console.log('Fetching total jobs count');
+    return this.prisma.job.count();
+  }
+
   async getJobById(id: number) {
     return this.prisma.job.findUnique({
       where: { id },
@@ -145,11 +150,16 @@ export class JobService {
       }
     }
 
+    const { companyId, ...restData } = data;
+    const jobCreateData: any = {
+      ...restData,
+      requirements: data.requirements || [],
+    };
+    if (companyId !== undefined) {
+      jobCreateData.companyId = companyId;
+    }
     const job = await this.prisma.job.create({
-      data: {
-        ...data,
-        requirements: data.requirements || [],
-      },
+      data: jobCreateData,
       include: {
         companyRef: {
           select: {
@@ -188,9 +198,24 @@ export class JobService {
       }
     }
 
+    // Remove companyId if it's undefined to satisfy Prisma's type requirements
+    const { companyId, ...restData } = data;
+
+    // Wrap enum fields in Prisma update operation objects if present
+    const updateData: any = { ...restData };
+    if (typeof restData.type !== 'undefined') {
+      updateData.type = { set: restData.type };
+    }
+    if (typeof restData.status !== 'undefined') {
+      updateData.status = { set: restData.status };
+    }
+    if (companyId !== undefined) {
+      updateData.companyId = companyId;
+    }
+
     const updatedJob = await this.prisma.job.update({
       where: { id },
-      data,
+      data: updateData,
       include: {
         companyRef: {
           select: {

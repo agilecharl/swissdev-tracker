@@ -1,3 +1,4 @@
+import axios from 'axios';
 import {
   Briefcase,
   Building,
@@ -9,8 +10,12 @@ import {
   Users,
   X,
 } from 'lucide-react'; // Using lucide-react for icons
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DashboardNavBar from './dashBoardNavBar';
+
+// Remove dotenv.config() - it's not needed in client-side code
+// For client-side env vars in Next.js, use NEXT_PUBLIC_ prefix
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 // Sidebar Link Component
 interface SidebarLinkProps {
@@ -40,6 +45,31 @@ const Dashboard = () => {
 // Dashboard Layout component
 const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [totalJobs, setTotalJobs] = useState(0);
+
+  useEffect(() => {
+    // Simulate fetching total jobs from an API
+    const resolveJobs = (resolve: (value: number) => void) => {
+      setTimeout(() => resolve(1250), 1000);
+    };
+
+    const fetchTotalJobs = async () => {
+      axios.defaults.baseURL = API_URL;
+      axios.defaults.headers.common['Content-Type'] = 'application/json';
+      axios.defaults.headers.common['Accept'] = 'application/json';
+
+      const { data } = await axios.get(
+        `${
+          API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL
+        }/api/jobs/count`
+      );
+      console.log('Total Jobs:', data);
+      const jobs = await new Promise<number>(resolveJobs);
+      setTotalJobs(jobs);
+    };
+
+    fetchTotalJobs();
+  }, []);
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen">
@@ -80,7 +110,7 @@ const DashboardLayout = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
           <DashboardCard
             title="Total Jobs"
-            value="1,250"
+            value={totalJobs.toString()}
             change="+10% new this week"
             color="bg-blue-500"
             icon={<Briefcase size={32} className="text-white" />}

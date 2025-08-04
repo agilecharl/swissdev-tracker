@@ -2,13 +2,16 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "../../", // Set to monorepo root to include all libs and apps
+    "rootDir": "src", // Change to local src directory
     "module": "nodenext",
     "types": ["node", "express"],
     "moduleResolution": "nodenext",
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
   },
-  "include": ["src/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "../../libs/**/*.ts" // Include only libs from current monorepo
+  ],
   "exclude": [
     "out-tsc",
     "dist",
@@ -17,6 +20,8 @@
     "src/**/*.test.ts",
     "eslint.config.js",
     "eslint.config.cjs",
-    "eslint.config.mjs"
+    "eslint.config.mjs",
+    "../../libs/**/*.spec.ts",
+    "../../libs/**/*.test.ts"
   ]
 }

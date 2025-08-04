@@ -13,9 +13,19 @@ import {
 import { useEffect, useState } from 'react';
 import DashboardNavBar from './dashBoardNavBar';
 
-// Remove dotenv.config() - it's not needed in client-side code
-// For client-side env vars in Next.js, use NEXT_PUBLIC_ prefix
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+// Safe way to access environment variables in client-side code
+const getApiUrl = () => {
+  if (typeof window === 'undefined') {
+    // Server-side
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3333';
+  }
+  // Client-side - check if NEXT_PUBLIC_API_URL was injected
+  return window.location.origin.includes('localhost')
+    ? 'http://localhost:3333'
+    : 'https://your-production-api.com';
+};
+
+const API_URL = getApiUrl();
 
 // Sidebar Link Component
 interface SidebarLinkProps {
@@ -48,11 +58,6 @@ const DashboardLayout = () => {
   const [totalJobs, setTotalJobs] = useState(0);
 
   useEffect(() => {
-    // Simulate fetching total jobs from an API
-    const resolveJobs = (resolve: (value: number) => void) => {
-      setTimeout(() => resolve(1250), 1000);
-    };
-
     const fetchTotalJobs = async () => {
       axios.defaults.baseURL = API_URL;
       axios.defaults.headers.common['Content-Type'] = 'application/json';
@@ -63,9 +68,8 @@ const DashboardLayout = () => {
           API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL
         }/api/jobs/count`
       );
-      console.log('Total Jobs:', data);
-      const jobs = await new Promise<number>(resolveJobs);
-      setTotalJobs(jobs);
+
+      setTotalJobs(data.total || 0);
     };
 
     fetchTotalJobs();

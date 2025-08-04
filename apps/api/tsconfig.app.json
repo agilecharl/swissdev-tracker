@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src", // Change to local src directory
+    // "rootDir": "src", // Removed to allow files outside src
     "module": "nodenext",
     "types": ["node", "express"],
     "moduleResolution": "nodenext",

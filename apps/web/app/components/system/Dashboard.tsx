@@ -182,34 +182,69 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
 
   const query = async () => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      setShowResults(false);
+      return;
+    }
+
     setIsSearching(true);
     setSearchResults([]);
+    setShowResults(true);
 
     try {
       // Search jobs
-
-      console.log('Searching for:', searchQuery);
       const jobsRes = await axios.get(
         `${API_URL}/api/jobs/search?q=${encodeURIComponent(searchQuery)}`
       );
+
       // Search companies
       const companiesRes = await axios.get(
         `${API_URL}/api/companies/search?q=${encodeURIComponent(searchQuery)}`
       );
-      setSearchResults([
-        ...jobsRes.data.results.map((j: any) => ({
-          ...j,
-          type: 'job',
-        })),
-        ...companiesRes.data.results.map((c: any) => ({
-          ...c,
-          type: 'company',
-        })),
-      ]);
+
+      // Safely extract data and ensure it's an array
+      let jobResults: any[] = [];
+      if (Array.isArray(jobsRes.data?.results?.jobs)) {
+        jobResults = jobsRes.data?.results?.jobs;
+      } else if (Array.isArray(jobsRes.data?.jobs)) {
+        jobResults = jobsRes.data.jobs;
+      } else {
+        jobResults = [];
+      }
+
+      let companyResults: any[] = [];
+      if (Array.isArray(companiesRes.data?.results?.companies)) {
+        companyResults = companiesRes.data?.results?.companies;
+      } else if (Array.isArray(companiesRes.data?.companies)) {
+        companyResults = companiesRes.data.companies;
+      } else {
+        companyResults = [];
+      }
+
+      if (jobResults.length === 0 && companyResults.length === 0) {
+        setSearchResults([
+          {
+            type: 'error',
+            message: 'No results found',
+          },
+        ]);
+      } else {
+        setSearchResults([
+          ...jobResults.map((j: any) => ({
+            ...j,
+            type: 'job',
+          })),
+          ...companyResults.map((c: any) => ({
+            ...c,
+            type: 'company',
+          })),
+        ]);
+      }
     } catch (err) {
-      // Handle error
       console.error('Search failed:', err);
       setSearchResults([
         {
@@ -221,12 +256,68 @@ const Header = () => {
     setIsSearching(false);
   };
 
+  const closeSearch = () => {
+    setSearchResults([]);
+    setSearchQuery('');
+    setShowResults(false);
+    setIsSearching(false);
+  };
+
+  const SearchResultBox = () => {
+    if (!showResults) return null;
+
+    return (
+      <div className="fixed inset-0 flex items-start justify-center z-50">
+        <div className="mt-24 bg-white shadow-lg rounded-lg w-80 p-4 relative">
+          <button
+            className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
+            onClick={closeSearch}
+            aria-label="Close"
+          >
+            <X size={20} />
+          </button>
+
+          {isSearching ? (
+            <div>
+              <h4 className="font-semibold mb-2">Searching...</h4>
+            </div>
+          ) : (
+            <div>
+              <h4 className="font-semibold mb-2">Search Results</h4>
+              <ul>
+                {searchResults.map((item, index) => {
+                  const key = `${item.type}-${
+                    item.id || item.title || item.name || index
+                  }`;
+
+                  let content;
+                  if (item.type === 'job') {
+                    content = <span>Job: {item.title}</span>;
+                  } else if (item.type === 'company') {
+                    content = <span>Company: {item.name}</span>;
+                  } else {
+                    content = <span>{item.message}</span>;
+                  }
+
+                  return (
+                    <li key={key} className="py-1 border-b last:border-b-0">
+                      {content}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <header className="bg-white p-4 rounded-xl shadow-md flex items-center justify-between">
       <h1 className="text-2xl font-semibold text-gray-800">
         Job Platform Dashboard
       </h1>
-      {/* You can add user profile, notifications, etc. here */}
       <div className="flex items-center space-x-4">
         <input
           type="text"
@@ -240,32 +331,10 @@ const Header = () => {
             }
           }}
         />
-        {/* Placeholder for user avatar or login button */}
         <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-bold">
           JD
         </div>
-        {/* Search Results Dropdown */}
-        {searchQuery && searchResults.length > 0 && (
-          <div className="absolute top-16 right-0 bg-white shadow-lg rounded-lg w-80 z-50 p-4">
-            <h4 className="font-semibold mb-2">Search Results</h4>
-            <ul>
-              {searchResults.map((item, idx) => (
-                <li key={idx} className="py-1 border-b last:border-b-0">
-                  {item.type === 'job' ? (
-                    <span>Job: {item.title}</span>
-                  ) : (
-                    <span>Company: {item.name}</span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        {isSearching && (
-          <div className="absolute top-16 right-0 bg-white shadow-lg rounded-lg w-80 z-50 p-4">
-            <span>Searching...</span>
-          </div>
-        )}
+        <SearchResultBox />
       </div>
     </header>
   );

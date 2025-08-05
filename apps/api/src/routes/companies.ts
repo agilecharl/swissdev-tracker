@@ -1,6 +1,8 @@
 import { Router } from 'express';
+import { CompanyService } from '../services/companyService';
 
 const router = Router();
+const companyService = new CompanyService();
 
 // Sample company data (in a real app, this would come from a database)
 const companies = [
@@ -85,6 +87,49 @@ const companies = [
     rating: 4.2,
   },
 ];
+
+// GET /api/companies/search - Search companies by query
+router.get('/search', async (req, res) => {
+  const query = req.query.q as string;
+
+  if (!query) {
+    return res.status(400).json({
+      success: false,
+      message: 'Search query is required',
+    });
+  }
+
+  try {
+    const companies = await companyService.searchCompanies(query);
+    return res.json({
+      success: true,
+      results: companies,
+    });
+  } catch (error) {
+    console.error('Error searching companies:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to search companies',
+    });
+  }
+});
+
+// GET /api/companies/count - Get total number of companies
+router.get('/count', (req, res) => {
+  try {
+    const totalCompanies = companies.length;
+    return res.json({
+      success: true,
+      total: totalCompanies,
+    });
+  } catch (error) {
+    console.error('Error fetching total companies count:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch total companies count',
+    });
+  }
+});
 
 // GET /api/companies - Get all companies
 router.get('/', (req, res) => {

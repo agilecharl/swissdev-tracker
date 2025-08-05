@@ -179,6 +179,48 @@ const SidebarLink = ({ icon, text }: SidebarLinkProps) => {
 
 // Header Component
 const Header = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const query = async () => {
+    setIsSearching(true);
+    setSearchResults([]);
+
+    try {
+      // Search jobs
+
+      console.log('Searching for:', searchQuery);
+      const jobsRes = await axios.get(
+        `${API_URL}/api/jobs/search?q=${encodeURIComponent(searchQuery)}`
+      );
+      // Search companies
+      const companiesRes = await axios.get(
+        `${API_URL}/api/companies/search?q=${encodeURIComponent(searchQuery)}`
+      );
+      setSearchResults([
+        ...jobsRes.data.results.map((j: any) => ({
+          ...j,
+          type: 'job',
+        })),
+        ...companiesRes.data.results.map((c: any) => ({
+          ...c,
+          type: 'company',
+        })),
+      ]);
+    } catch (err) {
+      // Handle error
+      console.error('Search failed:', err);
+      setSearchResults([
+        {
+          type: 'error',
+          message: 'Search failed. Please try again.',
+        },
+      ]);
+    }
+    setIsSearching(false);
+  };
+
   return (
     <header className="bg-white p-4 rounded-xl shadow-md flex items-center justify-between">
       <h1 className="text-2xl font-semibold text-gray-800">
@@ -190,11 +232,40 @@ const Header = () => {
           type="text"
           placeholder="Search jobs or companies..."
           className="p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={async (e) => {
+            if (e.key === 'Enter' && searchQuery.trim()) {
+              query();
+            }
+          }}
         />
         {/* Placeholder for user avatar or login button */}
         <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 font-bold">
           JD
         </div>
+        {/* Search Results Dropdown */}
+        {searchQuery && searchResults.length > 0 && (
+          <div className="absolute top-16 right-0 bg-white shadow-lg rounded-lg w-80 z-50 p-4">
+            <h4 className="font-semibold mb-2">Search Results</h4>
+            <ul>
+              {searchResults.map((item, idx) => (
+                <li key={idx} className="py-1 border-b last:border-b-0">
+                  {item.type === 'job' ? (
+                    <span>Job: {item.title}</span>
+                  ) : (
+                    <span>Company: {item.name}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {isSearching && (
+          <div className="absolute top-16 right-0 bg-white shadow-lg rounded-lg w-80 z-50 p-4">
+            <span>Searching...</span>
+          </div>
+        )}
       </div>
     </header>
   );

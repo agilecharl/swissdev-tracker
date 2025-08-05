@@ -112,6 +112,38 @@ export class JobService {
     return { jobs, total };
   }
 
+  async searchJobs(query: string, options: JobQueryOptions = {}) {
+    const { limit = 50, offset = 0 } = options;
+    const where: Record<string, any> = {
+      OR: [
+        { title: { contains: query, mode: 'insensitive' } },
+        { company: { contains: query, mode: 'insensitive' } },
+        { location: { contains: query, mode: 'insensitive' } },
+      ],
+    };
+    const [jobs, total] = await Promise.all([
+      this.prisma.job.findMany({
+        where,
+        include: {
+          companyRef: {
+            select: {
+              id: true,
+              name: true,
+              logo: true,
+            },
+          },
+        },
+        orderBy: {
+          postedDate: 'desc',
+        },
+        take: limit,
+        skip: offset,
+      }),
+      this.prisma.job.count({ where }),
+    ]);
+    return { jobs, total };
+  }
+
   async getTotalJobsCount() {
     console.log('Fetching total jobs count');
     return this.prisma.job.count();

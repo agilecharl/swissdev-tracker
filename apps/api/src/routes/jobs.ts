@@ -4,6 +4,32 @@ import { JobService, JobStatus, JobType } from '../services/jobService';
 const router = Router();
 const jobService = new JobService();
 
+// GET /api/jobs/search - Search jobs
+router.get('/search', async (req, res) => {
+  const query = req.query.q as string;
+
+  if (!query) {
+    return res.status(400).json({
+      success: false,
+      message: 'Search query is required',
+    });
+  }
+
+  try {
+    const jobs = await jobService.searchJobs(query);
+    return res.json({
+      success: true,
+      results: jobs,
+    });
+  } catch (error) {
+    console.error('Error searching jobs:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to search jobs',
+    });
+  }
+});
+
 // GET /api/jobs/count - Get total number of jobs
 router.get('/count', async (req, res) => {
   try {

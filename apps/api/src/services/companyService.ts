@@ -33,6 +33,57 @@ export class CompanyService {
     this.prisma = DatabaseService.getInstance();
   }
 
+  async searchCompanies(query: string, options: CompanyQueryOptions = {}) {
+    const { limit = 50, offset = 0 } = options;
+    const [companies, total] = await Promise.all([
+      this.prisma.company.findMany({
+        where: {
+          OR: [
+            {
+              name: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+            {
+              description: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        },
+        // Removed invalid 'companyRef' include as it does not exist in the Prisma schema
+        // If you want to include related data, replace this with a valid relation from your Prisma schema
+        orderBy: {
+          name: 'asc',
+        },
+        take: limit,
+        skip: offset,
+      }),
+      this.prisma.job.count({
+        where: {
+          OR: [
+            {
+              title: {
+                // Changed from 'name' to 'title'
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+            {
+              description: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        },
+      }),
+    ]);
+    return { companies, total };
+  }
+
   async getAllCompanies(options: CompanyQueryOptions = {}) {
     const {
       industry,
@@ -221,8 +272,13 @@ export class CompanyService {
   }
 
   async getCompanyByName(name: string) {
-    return this.prisma.company.findUnique({
-      where: { name },
+    return this.prisma.company.findFirst({
+      where: {
+        name: {
+          equals: name,
+          mode: 'insensitive',
+        },
+      },
     });
   }
 

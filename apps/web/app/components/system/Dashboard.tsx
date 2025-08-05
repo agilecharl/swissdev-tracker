@@ -56,6 +56,7 @@ const Dashboard = () => {
 const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [totalJobs, setTotalJobs] = useState(0);
+  const [totalApplicants, setTotalApplicants] = useState(0);
 
   useEffect(() => {
     const fetchTotalJobs = async () => {
@@ -72,7 +73,14 @@ const DashboardLayout = () => {
       setTotalJobs(data.total || 0);
     };
 
+    const fetchTotalApplicants = async () => {
+      const { data } = await axios.get(`${API_URL}/api/applicants/count`);
+
+      setTotalApplicants(data.total || 0);
+    };
+
     fetchTotalJobs();
+    fetchTotalApplicants();
   }, []);
 
   return (
@@ -121,7 +129,7 @@ const DashboardLayout = () => {
           />
           <DashboardCard
             title="New Applicants"
-            value="450"
+            value={totalApplicants.toString()}
             change="+15% since yesterday"
             color="bg-green-500"
             icon={<Users size={32} className="text-white" />}

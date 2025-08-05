@@ -75,3 +75,14 @@ enum JobStatus {
 
   @@schema("swissdev")
 }
+
+model Applicant {
+  id          Int        @id @default(autoincrement())
+  name        String
+  location    String
+  status      String
+  job         Int
+
+  @@map("applicants")
+  @@schema("swissdev")
+}

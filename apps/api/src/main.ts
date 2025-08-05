@@ -5,6 +5,7 @@
 
 import express from 'express';
 import * as path from 'path';
+import applicantsRouter from './routes/applicants';
 import companiesRouter from './routes/companies';
 import jobsRouter from './routes/jobs';
 
@@ -46,6 +47,7 @@ app.get('/api', (req, res) => {
 // API Routes
 app.use('/api/jobs', jobsRouter);
 app.use('/api/companies', companiesRouter);
+app.use('/api/applicants', applicantsRouter);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -65,6 +67,14 @@ app.use('*', (req, res) => {
       'PUT /api/companies/:id - Update company',
       'DELETE /api/companies/:id - Delete company',
       'GET /api/companies/:id/jobs - Get jobs for a company',
+      'GET /api/applicants - Get all applicants',
+      'POST /api/applicants - Create an applicant',
+      'GET /api/applicants/:id - Get applicant by ID',
+      'PUT /api/applicants/:id - Update applicant',
+      'DELETE /api/applicants/:id - Delete applicant',
+      'GET /api/applicants/:id/jobs - Get jobs for a specific applicant',
+      'GET /api/applicants/count - Get total number of applicants',
+      'GET /api/jobs/count - Get total number of jobs',
     ],
   });
 });
@@ -93,5 +103,8 @@ const server = app.listen(port, () => {
   );
   console.log(`📋 Jobs endpoint: http://localhost:${port}/api/jobs`);
   console.log(`🏢 Companies endpoint: http://localhost:${port}/api/companies`);
+  console.log(
+    `👥 Applicants endpoint: http://localhost:${port}/api/applicants`
+  );
 });
 server.on('error', console.error);

@@ -59,6 +59,30 @@ export interface UpdateCompanyRequest extends Partial<CreateCompanyRequest> {
   rating?: number;
 }
 
+export interface Applicant {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string;
+  resume: string;
+  application_date: string;
+  status: 'applied' | 'interviewed' | 'hired' | 'rejected';
+  companyId: number;
+}
+
+export interface CreateApplicantRequest {
+  name: string;
+  email: string;
+  phone?: string;
+  resume: string;
+  companyId: number;
+}
+
+export interface UpdateApplicantRequest
+  extends Partial<CreateApplicantRequest> {
+  status?: 'applied' | 'interviewed' | 'hired' | 'rejected';
+}
+
 // API Response interfaces
 export interface ApiResponse<T> {
   success: boolean;

@@ -1,6 +1,6 @@
 {
-  "name": "demo",
+  "name": "backend",
   "$schema": "../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/src",
+  "sourceRoot": "backend/src",
   "tags": []
 }

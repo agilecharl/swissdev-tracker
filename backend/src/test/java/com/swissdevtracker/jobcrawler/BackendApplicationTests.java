@@ -1,14 +1,13 @@
-package com.swissdev.springboot;
+package com.swissdevtracker.jobcrawler;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DemoApplicationTests {
+class BackendApplicationTests {
 
 	@Test
 	void contextLoads() {
-		// This test ensures that the Spring application context loads successfully.
 	}
 
 }

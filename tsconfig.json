@@ -4,22 +4,10 @@
   "files": [],
   "references": [
     {
-      "path": "./apps/web-e2e"
-    },
-    {
-      "path": "./apps/web"
-    },
-    {
       "path": "./apps/api-e2e"
     },
     {
       "path": "./apps/api"
-    },
-    {
-      "path": "./apps/telegram-bot-e2e"
-    },
-    {
-      "path": "./apps/telegram-bot"
     },
     {
       "path": "./apps/agent-e2e"
@@ -28,19 +16,31 @@
       "path": "./apps/agent"
     },
     {
-      "path": "./libs/types"
+      "path": "./apps/electron-web"
+    },
+    {
+      "path": "./apps/telegram-bot-e2e"
     },
     {
       "path": "./libs/resume-parser"
     },
     {
+      "path": "./apps/telegram-bot"
+    },
+    {
       "path": "./libs/matcher"
+    },
+    {
+      "path": "./apps/web-e2e"
+    },
+    {
+      "path": "./libs/types"
     },
     {
       "path": "./libs/data"
     },
     {
-      "path": "./apps/electron-web"
+      "path": "./apps/web"
     }
   ]
 }

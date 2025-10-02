@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,51 +9,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
   schemas  = ["swissdev"]
-}
-
-model Company {
-  id            Int      @id @default(autoincrement())
-  name          String   @unique
-  description   String?
-  industry      String
-  size          String?
-  location      String
-  website       String?
-  founded       Int?
-  logo          String?
-  benefits      String[] // Array of benefits
-  openPositions Int      @default(0)
-  rating        Float    @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  // Relations
-  jobs Job[]
-
-  @@map("companies")
-  @@schema("swissdev")
-}
-
-model Job {
-  id          Int        @id @default(autoincrement())
-  title       String
-  company     String     // This will be the company name
-  companyId   Int?       // Foreign key to Company table
-  location    String
-  type        JobType
-  salary      String?
-  description String?
-  requirements String[]  // Array of requirements
-  postedDate  DateTime   @default(now())
-  status      JobStatus  @default(ACTIVE)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  // Relations
-  companyRef  Company?   @relation(fields: [companyId], references: [id], onDelete: SetNull)
-
-  @@map("jobs")
-  @@schema("swissdev")
 }
 
 enum JobType {
@@ -76,13 +28,47 @@ enum JobStatus {
   @@schema("swissdev")
 }
 
-model Applicant {
-  id          Int        @id @default(autoincrement())
-  name        String
-  location    String
-  status      String
-  job         Int
+model Company {
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  description   String?
+  industry      String
+  size          String?
+  location      String
+  website       String?
+  founded       Int?
+  logo          String?
+  benefits      String[]
+  openPositions Int      @default(0)
+  rating        Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  @@map("applicants")
+  // Relations
+  jobs Job[]
+
+  @@map("companies")
+  @@schema("swissdev")
+}
+
+model Job {
+  id           Int       @id @default(autoincrement())
+  title        String
+  company      String
+  companyId    Int?
+  location     String
+  type         JobType
+  salary       String?
+  description  String?
+  requirements String[]
+  postedDate   DateTime  @default(now())
+  status       JobStatus @default(ACTIVE)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  Company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+
+  @@map("jobs")
   @@schema("swissdev")
 }

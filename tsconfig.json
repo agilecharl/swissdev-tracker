@@ -41,6 +41,12 @@
     },
     {
       "path": "./apps/web"
+    },
+    {
+      "path": "./apps/swissdev-tracker-e2e"
+    },
+    {
+      "path": "./apps/swissdev-tracker"
     }
   ]
 }

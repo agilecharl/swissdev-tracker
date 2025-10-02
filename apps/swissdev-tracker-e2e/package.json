@@ -1,0 +1,10 @@
+{
+  "name": "@swissdev-tracker/swissdev-tracker-e2e",
+  "version": "0.0.1",
+  "private": true,
+  "nx": {
+    "implicitDependencies": [
+      "@swissdev-tracker/swissdev-tracker"
+    ]
+  }
+}

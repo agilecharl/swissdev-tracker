@@ -1,4 +1,5 @@
 import { FaBrain, FaUsers, FaDatabase, FaRegCommentDots, FaFileExport, FaGlobe, FaPlus, FaUser } from 'react-icons/fa'; // Assuming react-icons is installed
+import { DefaultNavBar, AgentCard } from '@swissdev-tracker/dashboards';
 
 const DefaultDashboard = () => {
   return (
@@ -54,6 +55,10 @@ const DefaultDashboard = () => {
 
       {/* Main Content */}
       <main className="flex-1 p-6">
+        <DefaultNavBar />
+        <AgentCard image={''} title={''} buttonText={''} onButtonClick={function (): void {
+          throw new Error('Function not implemented.');
+        } } />
         <div className="grid grid-cols-4 gap-4 mb-6">
           <div className="bg-white p-4 rounded shadow">
             <FaUsers className="text-gray-400 mb-2" />

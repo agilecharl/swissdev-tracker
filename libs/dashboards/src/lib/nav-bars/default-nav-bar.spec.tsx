@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react';
-import NavBars from './nav-bars';
+import NavBars from './default-nav-bar';
 
 describe('NavBars', () => {
   it('should render successfully', () => {

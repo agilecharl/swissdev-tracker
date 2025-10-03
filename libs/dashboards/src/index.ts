@@ -1,3 +1,3 @@
-export { default as NavBars } from './lib/nav-bars/nav-bars';
-export { default as AgentCards } from './lib/agent-cards/agent-cards';
+export { default as DefaultNavBar } from './lib/nav-bars/default-nav-bar';
+export { default as AgentCard } from './lib/agent-card/agent-card';
 export { default as DefaultDashboard } from './lib/dashboards/default-dashboard';

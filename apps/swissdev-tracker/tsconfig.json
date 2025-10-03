@@ -3,7 +3,7 @@
   "include": [],
   "references": [
     {
-      "path": "../../libs/utils"
+      "path": "../../libs/dashboards"
     },
     {
       "path": "./tsconfig.app.json"

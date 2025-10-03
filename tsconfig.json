@@ -53,6 +53,9 @@
     },
     {
       "path": "./libs/dashboards"
+    },
+    {
+      "path": "./libs/jobs"
     }
   ]
 }

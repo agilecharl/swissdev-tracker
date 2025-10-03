@@ -1,9 +1,9 @@
-import { Dashboard } from '@swissdev-tracker/utils';
+import { DefaultDashboard } from '@swissdev-tracker/dashboards';
 
 export function App() {
   return (
     <div>
-      <Dashboard />
+      <DefaultDashboard />
     </div>
   );
 }

@@ -92,7 +92,7 @@ export class JobService {
       this.prisma.job.findMany({
         where,
         include: {
-          companyRef: {
+          Company: {
             select: {
               id: true,
               name: true,
@@ -125,7 +125,7 @@ export class JobService {
       this.prisma.job.findMany({
         where,
         include: {
-          companyRef: {
+          Company: {
             select: {
               id: true,
               name: true,
@@ -153,7 +153,7 @@ export class JobService {
     return this.prisma.job.findUnique({
       where: { id },
       include: {
-        companyRef: {
+        Company: {
           select: {
             id: true,
             name: true,
@@ -193,7 +193,7 @@ export class JobService {
     const job = await this.prisma.job.create({
       data: jobCreateData,
       include: {
-        companyRef: {
+        Company: {
           select: {
             id: true,
             name: true,
@@ -249,7 +249,7 @@ export class JobService {
       where: { id },
       data: updateData,
       include: {
-        companyRef: {
+        Company: {
           select: {
             id: true,
             name: true,

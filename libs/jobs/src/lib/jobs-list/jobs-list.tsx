@@ -16,10 +16,15 @@ export function JobsList() {
 
   const getJobs = async () => {
     try {
+
       setLoading(true);
       setError(null);
+      
       const data = await getRecords('jobs', {});
-      setJobs(data as Job[]);
+      const jobsData = data as { data: Job[] };
+
+      setJobs(jobsData.data);
+
     } catch (err) {
       console.error('Error fetching jobs:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch jobs');

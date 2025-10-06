@@ -1,7 +1,7 @@
-const apiUrl = import.meta.env.VITE_API_URL ?? '';
+const apiUrl = import.meta.env.VITE_API_URL ?? 'http://localhost:3333';
 
 export const getRecords = (url: string, params: any) => {
-  let localApiUrl = `${apiUrl}/${url}`;
+  let localApiUrl = `${apiUrl}/api/${url}`;
   localApiUrl = `${localApiUrl}`;
 
   return fetch(localApiUrl, {
@@ -10,10 +10,18 @@ export const getRecords = (url: string, params: any) => {
       'Content-Type': 'application/json',
     },
   })
-    .then((response) => {
+    .then(async (response) => {
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const text = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
       }
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Expected JSON response but received: ${contentType}. Response: ${text.substring(0, 200)}...`);
+      }
+      
       return response.json();
     })
     .then(async (data) => {
@@ -26,7 +34,7 @@ export const getRecords = (url: string, params: any) => {
 };
 
 export const insertRecord = (url: string, content: any) => {
-  let localApiUrl = `${apiUrl}/${url}`;
+  let localApiUrl = `${apiUrl}/api/${url}`;
   localApiUrl = `${localApiUrl}`;
 
   return fetch(localApiUrl, {
@@ -36,14 +44,31 @@ export const insertRecord = (url: string, content: any) => {
     },
     body: JSON.stringify(content),
   })
-    .then((response) => response.json())
+    .then(async (response) => {
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+      }
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Expected JSON response but received: ${contentType}. Response: ${text.substring(0, 200)}...`);
+      }
+      
+      return response.json();
+    })
     .then((data) => {
       return data;
+    })
+    .catch((error) => {
+      console.error('Error in insertRecord:', error);
+      throw error;
     });
 };
 
 export const updateRecord = (url: string, content: any) => {
-  let localApiUrl = `${apiUrl}/${url}`;
+  let localApiUrl = `${apiUrl}/api/${url}`;
   localApiUrl = `${localApiUrl}`;
 
   return fetch(localApiUrl, {
@@ -53,14 +78,31 @@ export const updateRecord = (url: string, content: any) => {
     },
     body: JSON.stringify(content),
   })
-    .then((response) => response.json())
+    .then(async (response) => {
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+      }
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Expected JSON response but received: ${contentType}. Response: ${text.substring(0, 200)}...`);
+      }
+      
+      return response.json();
+    })
     .then((data) => {
       return data;
+    })
+    .catch((error) => {
+      console.error('Error in updateRecord:', error);
+      throw error;
     });
 };
 
 export const deleteRecord = (url: string, params: any) => {
-  let localApiUrl = `${apiUrl}/${url}`;
+  let localApiUrl = `${apiUrl}/api/${url}`;
   localApiUrl = `${localApiUrl}`;
 
   return fetch(localApiUrl, {
@@ -69,8 +111,25 @@ export const deleteRecord = (url: string, params: any) => {
       'Content-Type': 'application/json',
     },
   })
-    .then((response) => response.json())
+    .then(async (response) => {
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+      }
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Expected JSON response but received: ${contentType}. Response: ${text.substring(0, 200)}...`);
+      }
+      
+      return response.json();
+    })
     .then((data) => {
       return data;
+    })
+    .catch((error) => {
+      console.error('Error in deleteRecord:', error);
+      throw error;
     });
 };

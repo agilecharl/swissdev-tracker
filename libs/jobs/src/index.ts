@@ -1,5 +1,5 @@
-export * from './lib/jobsite-card/jobsite-card';
-export * from './lib/job=sites-list/job-sites-list';
+export { default as JobsiteCard } from './lib/jobsite-card/jobsite-card';
+export { default as JobSitesList } from './lib/job-sites-list/job-sites-list';
 export { default as UserProjectsList } from './lib/user-projects-list/user-projects-list';
 export { default as UserJobsList } from './lib/user-jobs-list/user-jobs-list';
 export { default as UserCertificationsList } from './lib/user-certifications-list/user-certifications-list';

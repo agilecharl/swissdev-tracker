@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,23 +6,6 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
   schemas  = ["swissdev"]
-}
-
-enum JobType {
-  FULL_TIME
-  PART_TIME
-  CONTRACT
-  INTERNSHIP
-
-  @@schema("swissdev")
-}
-
-enum JobStatus {
-  ACTIVE
-  INACTIVE
-  FILLED
-
-  @@schema("swissdev")
 }
 
 model Company {
@@ -43,9 +23,7 @@ model Company {
   rating        Float    @default(0)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-
-  // Relations
-  jobs Job[]
+  jobs          Job[]
 
   @@map("companies")
   @@schema("swissdev")
@@ -61,14 +39,83 @@ model Job {
   salary       String?
   description  String?
   requirements String[]
-  postedDate   DateTime  @default(now())
   status       JobStatus @default(ACTIVE)
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-
-  // Relations
-  Company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  titleId      Int?      @map("title_id")
+  postDetails  String?   @map("post_details")
+  keywords     String?
+  website      String?   @db.VarChar(255)
+  createdAt    DateTime? @default(now()) @db.Timestamp(6) @map("created_at")
+  updatedAt    DateTime? @default(now()) @db.Timestamp(6) @map("updated_at")
+  url          String?
+  crawl        Boolean?  @default(true)
+  Company      Company?  @relation(fields: [companyId], references: [id])
 
   @@map("jobs")
+  @@schema("swissdev")
+}
+
+model applicants {
+  id               Int      @id @default(autoincrement())
+  name             String   @db.VarChar(255)
+  email            String   @db.VarChar(255)
+  phone            String?  @db.VarChar(50)
+  resume           String?
+  application_date DateTime @default(dbgenerated("CURRENT_DATE")) @db.Date
+
+  @@schema("swissdev")
+}
+
+model job_titles {
+  id    Int    @id @default(autoincrement())
+  title String @unique @db.VarChar(255)
+
+  @@schema("swissdev")
+}
+
+model user_certifications {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.VarChar(255)
+  issuer     String?   @db.VarChar(255)
+  issue_date DateTime? @db.Date
+
+  @@schema("swissdev")
+}
+
+model user_jobs {
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(255)
+  company     String    @db.VarChar(255)
+  location    String?   @db.VarChar(255)
+  start_date  DateTime? @db.Date
+  end_date    DateTime? @db.Date
+  description String?
+
+  @@schema("swissdev")
+}
+
+model user_projects {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255)
+  description String?
+  start_date  DateTime? @db.Date
+  end_date    DateTime? @db.Date
+
+  @@schema("swissdev")
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+
+  @@schema("swissdev")
+}
+
+enum JobStatus {
+  ACTIVE
+  INACTIVE
+  FILLED
+
   @@schema("swissdev")
 }

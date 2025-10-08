@@ -166,11 +166,11 @@ export class CompanyService {
             title: true,
             type: true,
             salary: true,
-            postedDate: true,
+            createdAt: true,
             status: true,
           },
           orderBy: {
-            postedDate: 'desc',
+            createdAt: 'desc',
           },
         },
         _count: {

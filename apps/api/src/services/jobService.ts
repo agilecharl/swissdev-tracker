@@ -101,7 +101,7 @@ export class JobService {
           },
         },
         orderBy: {
-          postedDate: 'desc',
+          createdAt: 'desc',
         },
         take: limit,
         skip: offset,
@@ -134,7 +134,7 @@ export class JobService {
           },
         },
         orderBy: {
-          postedDate: 'desc',
+          createdAt: 'desc',
         },
         take: limit,
         skip: offset,

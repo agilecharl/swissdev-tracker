@@ -240,7 +240,7 @@ router.get('/:id/jobs', (req, res) => {
       title: 'Senior Full Stack Developer',
       type: 'Full-time',
       salary: '120000-150000 CHF',
-      postedDate: '2025-01-15',
+      createdAt: '2025-01-15',
       status: 'active',
     },
   ].filter((job) => job.id === 1); // Mock filter for this applicant

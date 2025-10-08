@@ -8,7 +8,7 @@ export interface Job {
   salary: string;
   description: string;
   requirements: string[];
-  postedDate: string;
+  createdAt: string;
   status: 'active' | 'inactive' | 'filled';
 }
 

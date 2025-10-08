@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-// import { JobsCard } from '@swissdev-tracker/jobs';
+import { JobTitlesCard } from '@swissdev-tracker/jobs';
 import { getRecords } from '@swissdev-tracker/data';
 import styles from './jobs-list.module.css';
 

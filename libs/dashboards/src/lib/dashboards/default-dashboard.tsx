@@ -9,7 +9,7 @@ const DefaultDashboard = () => {
       <aside className="w-64 bg-white shadow-md p-4">
         <div className="flex items-center mb-6">
           <FaBrain className="text-purple-600 mr-2" size={24} />
-          <h1 className="text-xl font-bold text-purple-600">Agent.ai</h1>
+          <h1 className="text-xl font-bold text-purple-600">Swiss Dev Tracker</h1>
         </div>
         <nav>
           <ul>
@@ -36,7 +36,7 @@ const DefaultDashboard = () => {
           </ul>
         </nav>
         <div className="mt-6">
-          <h2 className="text-sm font-semibold mb-2">Agent.ai Copilot</h2>
+          <h2 className="text-sm font-semibold mb-2">Siwss Dev Tracker</h2>
           <div className="relative">
             <input
               type="text"

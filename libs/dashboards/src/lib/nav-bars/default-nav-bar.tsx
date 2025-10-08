@@ -93,7 +93,7 @@ if (!target.closest('.navbar-user-menu') && !target.closest('.navbar-user-button
       <div className="navbar__container">
         {/* Logo */}
         <div className="navbar__logo">
-          Agent.AI
+          Swiss Dev Tracker
         </div>
 
         {/* Desktop Navigation */}

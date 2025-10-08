@@ -1,4 +1,4 @@
-import styles from './jobs-card.module.css';
+import styles from './job-card.module.css';
 
 interface Job {
   id: string;

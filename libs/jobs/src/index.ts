@@ -1,5 +1,12 @@
-export { default as JobTitlesCard } from './lib/job-titles-card/job-titles-card';
+export { default as UserProjectsList } from './lib/user-projects-list/user-projects-list';
+export { default as UserJobsList } from './lib/user-jobs-list/user-jobs-list';
+export { default as UserCertificationsList } from './lib/user-certifications-list/user-certifications-list';
+export { default as JobCertificationsList } from './lib/job-certifications-list/job-certifications-list';
+export { default as UserCertificationCard } from './lib/user-certification-card/user-certification-card';
+export { default as UserProjectCard } from './lib/user-project-card/user-project-card';
+export { default as UserJobCard } from './lib/user-job-card/user-job-card';
+export { default as JobTitlesCard } from './lib/job-title-card/job-title-card';
 export { default as JobTitlesList } from './lib/job-titles-list/job-titles-list';
 export { default as JobsList } from './lib/jobs-list/jobs-list';
-export { default as JobsCard } from './lib/jobs-card/jobs-card';
+export { default as JobsCard } from './lib/job-card/job-card';
 export * from './lib/jobs';

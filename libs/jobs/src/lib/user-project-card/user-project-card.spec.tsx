@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
-import JobsCard from './jobs-card';
+import UserJobProject from './user-project-card';
 
-describe('JobsCard', () => {
+describe('UserJobProject', () => {
   it('should render successfully', () => {
-    const { baseElement } = render(<JobsCard />);
+    const { baseElement } = render(<UserJobProject />);
     expect(baseElement).toBeTruthy();
   });
 });
